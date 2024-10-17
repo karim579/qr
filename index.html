@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Code Scanner</title>
+    <script src="https://unpkg.com/instascan/latest/instascan.min.js"></script>
+    <style>
+        #preview {
+            -webkit-transform: scaleX(-1);
+            transform: scaleX(-1); 
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Code Scanner</h1>
+    <video id="preview" width="100%"></video>
+    <script>
+        let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+        scanner.addListener('scan', function (content) {
+            fetch('https://script.google.com/macros/s/AKfycbxbQM8QiLVIasrpRf1e8fJujEC6w6R4dxq42_wI7r1eFRZVZLkqbm4k5GR2ssh16Gsv/exec?q=' + content)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    // يمكن عرض البيانات في الصفحة
+                });
+        });
+
+        Instascan.Camera.getCameras().then(function (cameras) {
+            if (cameras.length > 0) {
+                var selectedCamera = cameras[0];
+                for (var i = 0; i < cameras.length; i++) {
+                    if (cameras[i].name.indexOf('back') !== -1) {
+                        selectedCamera = cameras[i];
+                        break;
+                    }
+                }
+                scanner.start(selectedCamera);
+            } else {
+                console.error('No cameras found.');
+            }
+        }).catch(function (e) {
+            console.error(e);
+        });
+    </script>
+</body>
+</html>
